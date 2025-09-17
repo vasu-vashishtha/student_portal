@@ -9,7 +9,26 @@ const studentRoutes = require("./routes/student");
 const adminRoutes = require("./routes/admin");
 
 const app = express();
-app.use(cors());
+
+// CORS configuration: allow production frontend and local dev
+const allowedOrigins = [
+  'https://convocationmedal.ccsuniversity.ac.in',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow server-to-server or curl
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 app.use("/uploads", express.static("uploads"));
