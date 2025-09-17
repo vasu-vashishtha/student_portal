@@ -10,11 +10,13 @@ export default function StudentDashboard() {
 
   // Form state for editable fields
   const [form, setForm] = useState({
-    age: "",
-    medal: "",
     dob: "",
+    age: "",
+    gender: "",
+    address: "",
     email: "",
     phone_no: "",
+    medal: "",
   });
 
   // File state for photo & signature
@@ -22,6 +24,23 @@ export default function StudentDashboard() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [signFile, setSignFile] = useState(null);
   const [signPreview, setSignPreview] = useState(null);
+
+  // Helper function to calculate age
+  const calculateAge = (dob) => {
+    if (!dob) return "";
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
 
   // Redirect to login if not logged in
   useEffect(() => {
@@ -36,11 +55,13 @@ export default function StudentDashboard() {
         .then((res) => {
           setData(res.data);
           setForm({
-            age: res.data.age || "",
-            medal: res.data.medal || "",
             dob: res.data.dob || "",
+            age: res.data.dob ? calculateAge(res.data.dob) : "",
+            gender: res.data.gender || "",
+            address: res.data.address || "",
             email: res.data.email || "",
             phone_no: res.data.phone_no || "",
+            medal: res.data.medal || "",
           });
           setPhotoPreview(res.data.photo ? `http://localhost:5000/uploads/${res.data.photo}` : null);
           setSignPreview(res.data.signature ? `http://localhost:5000/uploads/${res.data.signature}` : null);
@@ -49,8 +70,18 @@ export default function StudentDashboard() {
     }
   }, [token]);
 
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if(name === "dob") {
+      setForm({
+        ...form,
+        dob: value,
+        age: calculateAge(value),
+      });
+    }else{
+      setForm({ ...form, [e.target.name]: e.target.value });
+    }
   };
 
   const handlePhotoChange = (e) => {
@@ -65,8 +96,28 @@ export default function StudentDashboard() {
     setSignPreview(URL.createObjectURL(file));
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.gender) {
+      alert("Gender is required");
+      return;
+    }
+    if (!form.phone_no) {
+      alert("Phone number is required");
+      return;
+    }
+    if (!photoFile && !photoPreview) {
+      alert("Photo is required");
+      return;
+    }
+    if (!signFile && !signPreview) {
+      alert("Signature is required");
+      return;
+    }
+
     try {
       // Update editable fields
       await api.put("/student/update", form);
@@ -95,97 +146,8 @@ export default function StudentDashboard() {
   if (!data) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    // <div className="min-h-screen bg-gray-50 p-6">
-    //   <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
-    //     <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-
-        
-    //     <div className="grid grid-cols-2 gap-4 mb-6">
-    //       <p><strong>SL No:</strong> {data.sl_no}</p>
-    //       <p><strong>Course:</strong> {data.course_name}</p>
-    //       <p><strong>Roll No:</strong> {data.roll_no}</p>
-    //       <p><strong>Enroll No:</strong> {data.enroll_no}</p>
-    //       <p><strong>Name:</strong> {data.student_name}</p>
-    //       <p><strong>Father:</strong> {data.father_name}</p>
-    //       <p><strong>Mother:</strong> {data.mother_name}</p>
-    //       <p><strong>Medal:</strong> {data.medal || "N/A"}</p> 
-    //     </div>
-
-        
-    //     <form onSubmit={handleSubmit} className="space-y-4">
-    //       <input
-    //         type="number"
-    //         name="age"
-    //         placeholder="Age"
-    //         value={form.age}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-    //       {/* <input
-    //         type="text"
-    //         name="medal"
-    //         placeholder="Medal"
-    //         value={form.medal}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       /> */}
-    //       <input
-    //         type="date"
-    //         name="dob"
-    //         value={form.dob}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-    //       <input
-    //         type="email"
-    //         name="email"
-    //         placeholder="Email"
-    //         value={form.email}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-    //       <input
-    //         type="text"
-    //         name="phone_no"
-    //         placeholder="Phone Number"
-    //         value={form.phone_no}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-
-          
-    //       <div className="flex flex-col md:flex-row gap-4 items-center">
-    //         <div>
-    //           <label className="block font-semibold mb-1">Photo:</label>
-    //           {photoPreview && <img src={photoPreview} alt="Photo" className="w-24 h-24 object-cover mb-2 border" />}
-    //           <input type="file" accept="image/*" onChange={handlePhotoChange} />
-    //         </div>
-
-    //         <div>
-    //           <label className="block font-semibold mb-1">Signature:</label>
-    //           {signPreview && <img src={signPreview} alt="Signature" className="w-24 h-24 object-cover mb-2 border" />}
-    //           <input type="file" accept="image/*" onChange={handleSignChange} />
-    //         </div>
-    //       </div>
-
-    //       <button
-    //         type="submit"
-    //         className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-    //       >
-    //         Save
-    //       </button>
-    //     </form>
-
-    //     <button
-    //       onClick={() => { logout(); navigate("/login"); }}
-    //       className="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
-    //     >
-    //       Logout
-    //     </button>
-    //   </div>
-    // </div>
-
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+  
+     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         {/* Header with title + logout */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
@@ -204,7 +166,7 @@ export default function StudentDashboard() {
         {/* Student Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-700">
           <p><strong>SL No:</strong> {data.sl_no}</p>
-          <p><strong>Course:</strong> {data.course_name}</p>
+          <p><strong>Program:</strong> {data.course_name}</p>
           <p><strong>Roll No:</strong> {data.roll_no}</p>
           <p><strong>Enroll No:</strong> {data.enroll_no}</p>
           <p><strong>Name:</strong> {data.student_name}</p>
@@ -215,21 +177,52 @@ export default function StudentDashboard() {
 
         {/* Update Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block font-medium mb-1">Date of Birth</label>
           <input
-            type="number"
-            name="age"
-            placeholder="Age"
-            value={form.age}
+              type="date"
+              name="dob"
+              value={form.dob}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Age</label>
+            <input
+              type="number"
+              name="age"
+              value={form.age}
+              readOnly
+              className="w-full px-3 py-2 border rounded-lg bg-gray-100 cursor-not-allowed"
+            />
+        </div>
+        <div>
+        <label className="block font-medium mb-1">Gender <span className="text-red-600">*</span></label>
+          <select
+            name="gender"
+            value={form.gender}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <input
-            type="date"
-            name="dob"
-            value={form.dob}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+        <label className="block font-medium mb-1">Address</label>
+          <textarea
+            name="address"
+            placeholder="Address"
+            value={form.address}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+            className="w-full p-2 border rounded"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Email</label>
           <input
             type="email"
             name="email"
@@ -238,6 +231,9 @@ export default function StudentDashboard() {
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Phone<span className="text-red-600">*</span></label>
           <input
             type="text"
             name="phone_no"
@@ -246,11 +242,13 @@ export default function StudentDashboard() {
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+        </div>
+          
 
           {/* Photo & Signature Uploads */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="p-4 border rounded-lg text-center">
-              <label className="block font-semibold mb-2">Photo</label>
+              <label className="block font-semibold mb-2">Photo<span className="text-red-600">*</span></label>
               {photoPreview && (
                 <img
                   src={photoPreview}
@@ -264,11 +262,11 @@ export default function StudentDashboard() {
                 onChange={handlePhotoChange}
                 className="w-full text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">Max size: 500kB | Format: JPG/PNG</p>
+              {/* <p className="text-xs text-gray-500 mt-1">Max size: 500kB | Format: JPG/PNG</p> */}
             </div>
 
             <div className="p-4 border rounded-lg text-center">
-              <label className="block font-semibold mb-2">Signature</label>
+              <label className="block font-semibold mb-2">Signature<span className="text-red-600">*</span></label>
               {signPreview && (
                 <img
                   src={signPreview}
@@ -282,7 +280,7 @@ export default function StudentDashboard() {
                 onChange={handleSignChange}
                 className="w-full text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">Max size: 500kB | Format: JPG/PNG</p>
+              {/* <p className="text-xs text-gray-500 mt-1">Max size: 500kB | Format: JPG/PNG</p> */}
             </div>
           </div>
 

@@ -160,7 +160,14 @@ export default function AdminDashboard() {
     if (token) {
       api
         .get("/admin/students")
-        .then((res) => setStudents(res.data))
+        .then((res) =>
+          setStudents(
+            res.data.map((s) => ({
+              ...s,
+              dob: s.dob ? new Date(s.dob).toISOString().split("T")[0] : "", // ✅ format here
+            }))
+          )
+        )
         .catch((err) => console.error(err));
     }
   }, [token]);
@@ -174,17 +181,19 @@ export default function AdminDashboard() {
 
     worksheet.columns = [
       { header: "SL No", key: "sl_no", width: 10 },
-      { header: "Course", key: "course_name", width: 25 },
+      { header: "Program", key: "course_name", width: 25 },
       { header: "Roll No", key: "roll_no", width: 15 },
       { header: "Enroll No", key: "enroll_no", width: 15 },
       { header: "Student Name", key: "student_name", width: 25 },
       { header: "Father", key: "father_name", width: 25 },
       { header: "Mother", key: "mother_name", width: 25 },
-      { header: "Age", key: "age", width: 10 },
-      { header: "Medal", key: "medal", width: 10 },
       { header: "DOB", key: "dob", width: 15 },
+      { header: "Age", key: "age", width: 10 },
+      { header: "Gender", key: "gender", width: 10 },
+      { header: "Address", key: "address", width: 30 },    
       { header: "Email", key: "email", width: 30 },
       { header: "Phone", key: "phone_no", width: 15 },
+      { header: "Medal", key: "medal", width: 10 },
       { header: "Photo", key: "photo", width: 40 },
       { header: "Signature", key: "signature", width: 40 },
     ];
@@ -253,17 +262,19 @@ export default function AdminDashboard() {
             <thead className="bg-gray-200 sticky top-0 z-10">
               <tr>
                 <th className="border px-4 py-2 text-sm">SL No</th>
-                <th className="border px-4 py-2 text-sm">Course</th>
+                <th className="border px-4 py-2 text-sm">Program</th>
                 <th className="border px-4 py-2 text-sm">Roll No</th>
                 <th className="border px-4 py-2 text-sm">Enroll No</th>
                 <th className="border px-4 py-2 text-sm">Student Name</th>
                 <th className="border px-4 py-2 text-sm">Father</th>
                 <th className="border px-4 py-2 text-sm">Mother</th>
-                <th className="border px-4 py-2 text-sm">Age</th>
-                <th className="border px-4 py-2 text-sm">Medal</th>
                 <th className="border px-4 py-2 text-sm">DOB</th>
+                <th className="border px-4 py-2 text-sm">Age</th>
+                <th className="border px-4 py-2 text-sm">Gender</th>
+                <th className="border px-4 py-2 text-sm">Address</th>
                 <th className="border px-4 py-2 text-sm">Email</th>
                 <th className="border px-4 py-2 text-sm">Phone</th>
+                <th className="border px-4 py-2 text-sm">Medal</th>
                 <th className="border px-4 py-2 text-sm">Photo</th>
                 <th className="border px-4 py-2 text-sm">Signature</th>
               </tr>
@@ -281,11 +292,13 @@ export default function AdminDashboard() {
                   <td className="border px-4 py-2">{s.student_name}</td>
                   <td className="border px-4 py-2">{s.father_name}</td>
                   <td className="border px-4 py-2">{s.mother_name}</td>
-                  <td className="border px-4 py-2">{s.age}</td>
-                  <td className="border px-4 py-2">{s.medal}</td>
                   <td className="border px-4 py-2">{s.dob}</td>
+                  <td className="border px-4 py-2">{s.age}</td>
+                  <td className="border px-4 py-2">{s.gender}</td>
+                  <td className="border px-4 py-2">{s.address}</td>
                   <td className="border px-4 py-2">{s.email}</td>
                   <td className="border px-4 py-2">{s.phone_no}</td>
+                  <td className="border px-4 py-2">{s.medal}</td>
                   <td className="border px-4 py-2">
                     {s.photo && (
                       <img

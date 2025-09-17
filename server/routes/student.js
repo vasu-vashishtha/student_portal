@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/me", auth("student"), async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      "SELECT sl_no, course_name, roll_no, enroll_no, student_name, father_name, mother_name, age, medal, dob, email, phone_no, photo, signature, submitted FROM student_details WHERE id = ?",
+      "SELECT sl_no, course_name, roll_no, enroll_no, student_name, father_name, mother_name, age, medal, dob, email, phone_no, photo, signature, submitted, gender, address FROM student_details WHERE id = ?",
       [req.user.id]
     );
 
@@ -41,17 +41,21 @@ router.get("/me", auth("student"), async (req, res) => {
 // });
 
 router.put("/update", auth("student"), async (req, res) => {
-  let { age, medal, dob, email, phone_no } = req.body;
+  let { age, medal, dob, email, phone_no, address, gender } = req.body;
 
   try {
+
+    if (!gender || !phone_no) {
+      return res.status(400).json({ message: "Gender and phone number are required" });
+    }
     // Convert dob to YYYY-MM-DD if it exists
     if (dob) {
       dob = new Date(dob).toISOString().split("T")[0];
     }
 
     await pool.execute(
-      "UPDATE student_details SET age = ?, medal = ?, dob = ?, email = ?, phone_no = ?, submitted = 1 WHERE id = ?",
-      [age, medal, dob, email, phone_no, req.user.id]
+      "UPDATE student_details SET age = ?, medal = ?, dob = ?, email = ?, phone_no = ?, address = ?, gender = ?, submitted = 1 WHERE id = ?",
+      [age, medal, dob, email, phone_no, address, gender, req.user.id]
     );
 
     res.json({ message: "Details updated successfully" });
@@ -64,6 +68,10 @@ router.put("/update", auth("student"), async (req, res) => {
 // Upload photo
 router.post("/upload/photo", auth("student"), upload.single("photo"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Photo is required" });
+    }
+
     const filePath = req.file.filename;
     await pool.execute("UPDATE student_details SET photo = ? WHERE id = ?", [filePath, req.user.id]);
     res.json({ message: "Photo uploaded successfully", file: filePath });
@@ -76,6 +84,10 @@ router.post("/upload/photo", auth("student"), upload.single("photo"), async (req
 // Upload signature
 router.post("/upload/signature", auth("student"), upload.single("signature"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Signature is required" });
+    }
+    
     const filePath = req.file.filename;
     await pool.execute("UPDATE student_details SET signature = ? WHERE id = ?", [filePath, req.user.id]);
     res.json({ message: "Signature uploaded successfully", file: filePath });
