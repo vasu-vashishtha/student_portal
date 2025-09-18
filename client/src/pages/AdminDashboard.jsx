@@ -110,7 +110,6 @@
 //                   <td className="border px-4 py-2">
 //                     {s.photo && (
 //                       <img
-//                         src={`http://localhost:5000/uploads/${s.photo}`}
 //                         alt="photo"
 //                         className="w-16 h-16 object-cover mx-auto rounded"
 //                       />
@@ -119,7 +118,6 @@
 //                   <td className="border px-4 py-2">
 //                     {s.signature && (
 //                       <img
-//                         src={`http://localhost:5000/uploads/${s.signature}`}
 //                         alt="sign"
 //                         className="w-16 h-16 object-cover mx-auto rounded"
 //                       />
@@ -139,7 +137,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import api, { buildFileUrl } from "../api";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
@@ -205,7 +203,7 @@ export default function AdminDashboard() {
       if (s.photo) {
         row.getCell("photo").value = {
           text: "View Photo",
-          hyperlink: `http://localhost:5000/uploads/${s.photo}`,
+          hyperlink: buildFileUrl(s.photo),
         };
         row.getCell("photo").font = { color: { argb: "FF0000FF" }, underline: true };
       }
@@ -214,7 +212,7 @@ export default function AdminDashboard() {
       if (s.signature) {
         row.getCell("signature").value = {
           text: "View Signature",
-          hyperlink: `http://localhost:5000/uploads/${s.signature}`,
+          hyperlink: buildFileUrl(s.signature),
         };
         row.getCell("signature").font = { color: { argb: "FF0000FF" }, underline: true };
       }
@@ -302,7 +300,7 @@ export default function AdminDashboard() {
                   <td className="border px-4 py-2">
                     {s.photo && (
                       <img
-                        src={`http://localhost:5000/uploads/${s.photo}`}
+                        src={buildFileUrl(s.photo)}
                         alt="photo"
                         className="w-16 h-16 object-cover mx-auto rounded"
                       />
@@ -311,7 +309,7 @@ export default function AdminDashboard() {
                   <td className="border px-4 py-2">
                     {s.signature && (
                       <img
-                        src={`http://localhost:5000/uploads/${s.signature}`}
+                        src={buildFileUrl(s.signature)}
                         alt="sign"
                         className="w-16 h-16 object-cover mx-auto rounded"
                       />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import api, { buildFileUrl } from "../api";
 
 export default function StudentDashboard() {
   const { user, token, logout } = useAuth();
@@ -63,8 +63,8 @@ export default function StudentDashboard() {
             phone_no: res.data.phone_no || "",
             medal: res.data.medal || "",
           });
-          setPhotoPreview(res.data.photo ? `http://localhost:5000/uploads/${res.data.photo}` : null);
-          setSignPreview(res.data.signature ? `http://localhost:5000/uploads/${res.data.signature}` : null);
+          setPhotoPreview(res.data.photo ? buildFileUrl(res.data.photo) : null);
+          setSignPreview(res.data.signature ? buildFileUrl(res.data.signature) : null);
         })
         .catch((err) => console.error(err));
     }

@@ -53,6 +53,18 @@ jobs:
         tags: |
           type=raw,value=latest
 
+    - name: Prepare build args
+      id: prep
+      run: |
+        : "Using provided env vars or defaults"
+        API_URL="${VITE_API_URL:-https://api.convocationmedal.ccsuniversity.ac.in/api}"
+        UPLOADS_URL="${VITE_UPLOADS_BASE_URL:-https://api.convocationmedal.ccsuniversity.ac.in}"
+        echo "VITE_API_URL=$API_URL" >> $GITHUB_OUTPUT
+        echo "VITE_UPLOADS_BASE_URL=$UPLOADS_URL" >> $GITHUB_OUTPUT
+        echo "Using VITE_API_URL=$API_URL"
+        echo "Using VITE_UPLOADS_BASE_URL=$UPLOADS_URL"
+
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -64,4 +76,5 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
-          VITE_API_URL=https://api.convocationmedal.ccsuniversity.ac.in
+          VITE_API_URL=${{ steps.prep.outputs.VITE_API_URL }}
+          VITE_UPLOADS_BASE_URL=${{ steps.prep.outputs.VITE_UPLOADS_BASE_URL }}

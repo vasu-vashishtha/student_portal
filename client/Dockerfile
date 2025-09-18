@@ -11,9 +11,11 @@ RUN npm ci || npm install
 # Copy source
 COPY . .
 
-# Accept build-time API URL for Vite
+# Accept build-time environment variables for Vite
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
+ARG VITE_UPLOADS_BASE_URL
+ENV VITE_UPLOADS_BASE_URL=${VITE_UPLOADS_BASE_URL}
 
 # Build static assets
 RUN npm run build
