@@ -171,56 +171,437 @@ export default function AdminDashboard() {
   }, [token]);
 
   // Export to Excel with hyperlinks
-  const handleDownloadExcel = async () => {
-    if (students.length === 0) return;
+  // const handleDownloadExcel = async () => {
+  //   if (students.length === 0) return;
 
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Students");
+  //   const workbook = new ExcelJS.Workbook();
+  //   const worksheet = workbook.addWorksheet("Students");
 
-    worksheet.columns = [
-      { header: "SL No", key: "sl_no", width: 10 },
-      { header: "Program", key: "course_name", width: 25 },
-      { header: "Roll No", key: "roll_no", width: 15 },
-      { header: "Enroll No", key: "enroll_no", width: 15 },
-      { header: "Student Name", key: "student_name", width: 25 },
-      { header: "Father", key: "father_name", width: 25 },
-      { header: "Mother", key: "mother_name", width: 25 },
-      { header: "DOB", key: "dob", width: 15 },
-      { header: "Age", key: "age", width: 10 },
-      { header: "Gender", key: "gender", width: 10 },
-      { header: "Address", key: "address", width: 30 },    
-      { header: "Email", key: "email", width: 30 },
-      { header: "Phone", key: "phone_no", width: 15 },
-      { header: "Medal", key: "medal", width: 10 },
-      { header: "Photo", key: "photo", width: 40 },
-      { header: "Signature", key: "signature", width: 40 },
-    ];
+  //   worksheet.columns = [
+  //     { header: "SL No", key: "sl_no", width: 10 },
+  //     { header: "Program", key: "course_name", width: 25 },
+  //     { header: "Roll No", key: "roll_no", width: 15 },
+  //     { header: "Enroll No", key: "enroll_no", width: 15 },
+  //     { header: "Student Name", key: "student_name", width: 25 },
+  //     { header: "Father", key: "father_name", width: 25 },
+  //     { header: "Mother", key: "mother_name", width: 25 },
+  //     { header: "DOB", key: "dob", width: 15 },
+  //     { header: "Age", key: "age", width: 10 },
+  //     { header: "Gender", key: "gender", width: 10 },
+  //     { header: "Address", key: "address", width: 30 },    
+  //     { header: "Email", key: "email", width: 30 },
+  //     { header: "Phone", key: "phone_no", width: 15 },
+  //     { header: "Medal", key: "medal", width: 10 },
+  //     { header: "Photo", key: "photo", width: 40 },
+  //     { header: "Signature", key: "signature", width: 40 },
+  //   ];
 
-    students.forEach((s) => {
-      const row = worksheet.addRow(s);
+  //   students.forEach((s) => {
+  //     const row = worksheet.addRow(s);
 
-      // Photo hyperlink
-      if (s.photo) {
-        row.getCell("photo").value = {
-          text: "View Photo",
-          hyperlink: buildFileUrl(s.photo),
-        };
-        row.getCell("photo").font = { color: { argb: "FF0000FF" }, underline: true };
-      }
+  //     // Photo hyperlink
+  //     if (s.photo) {
+  //       row.getCell("photo").value = {
+  //         text: "View Photo",
+  //         hyperlink: buildFileUrl(s.photo),
+  //       };
+  //       row.getCell("photo").font = { color: { argb: "FF0000FF" }, underline: true };
+  //     }
 
-      // Signature hyperlink
-      if (s.signature) {
-        row.getCell("signature").value = {
-          text: "View Signature",
-          hyperlink: buildFileUrl(s.signature),
-        };
-        row.getCell("signature").font = { color: { argb: "FF0000FF" }, underline: true };
-      }
-    });
+  //     // Signature hyperlink
+  //     if (s.signature) {
+  //       row.getCell("signature").value = {
+  //         text: "View Signature",
+  //         hyperlink: buildFileUrl(s.signature),
+  //       };
+  //       row.getCell("signature").font = { color: { argb: "FF0000FF" }, underline: true };
+  //     }
+  //   });
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "students.xlsx");
+  //   const buffer = await workbook.xlsx.writeBuffer();
+  //   saveAs(new Blob([buffer]), "students.xlsx");
+  // };
+
+// Export to Excel with embedded images + fallback hyperlinks
+// const handleDownloadExcel = async () => {
+//   if (students.length === 0) return;
+
+//   const workbook = new ExcelJS.Workbook();
+//   const worksheet = workbook.addWorksheet("Students");
+
+//   worksheet.columns = [
+//     { header: "SL No", key: "sl_no", width: 10 },
+//     { header: "Program", key: "course_name", width: 25 },
+//     { header: "Roll No", key: "roll_no", width: 15 },
+//     { header: "Enroll No", key: "enroll_no", width: 15 },
+//     { header: "Student Name", key: "student_name", width: 25 },
+//     { header: "Father", key: "father_name", width: 25 },
+//     { header: "Mother", key: "mother_name", width: 25 },
+//     { header: "DOB", key: "dob", width: 15 },
+//     { header: "Age", key: "age", width: 10 },
+//     { header: "Gender", key: "gender", width: 10 },
+//     { header: "Address", key: "address", width: 30 },
+//     { header: "Email", key: "email", width: 30 },
+//     { header: "Phone", key: "phone_no", width: 15 },
+//     { header: "Medal", key: "medal", width: 10 },
+//     { header: "Photo", key: "photo", width: 20 },
+//     { header: "Signature", key: "signature", width: 20 },
+//   ];
+
+//   const getImageExtension = (filename) => {
+//     if (!filename) return "png"; // default
+//     const ext = filename.split(".").pop().toLowerCase();
+//     if (["png", "jpg", "jpeg"].includes(ext)) return ext;
+//     return "png"; // fallback
+//   };
+
+//   for (const s of students) {
+//     const row = worksheet.addRow(s);
+
+//     // --- Photo (Preview + Fallback) ---
+//     if (s.photo) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.photo));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const photoExt = getImageExtension(s.photo);
+
+//         const photoId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: photoExt,
+//         });
+
+//         worksheet.addImage(photoId, {
+//           tl: { col: 14, row: row.number - 1 }, // Photo column index
+//           ext: { width: 60, height: 60 },
+//         });
+//       } catch (err) {
+//         console.error("Error embedding photo:", err);
+//         row.getCell("photo").value = {
+//           text: "View Photo",
+//           hyperlink: buildFileUrl(s.photo),
+//         };
+//         row.getCell("photo").font = { color: { argb: "FF0000FF" }, underline: true };
+//       }
+//     }
+
+//     // --- Signature (Preview + Fallback) ---
+//     if (s.signature) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.signature));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const signExt = getImageExtension(s.signature);
+
+//         const signId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: signExt,
+//         });
+
+//         worksheet.addImage(signId, {
+//           tl: { col: 15, row: row.number - 1 }, // Signature column index
+//           ext: { width: 60, height: 60 },
+//         });
+//       } catch (err) {
+//         console.error("Error embedding signature:", err);
+//         row.getCell("signature").value = {
+//           text: "View Signature",
+//           hyperlink: buildFileUrl(s.signature),
+//         };
+//         row.getCell("signature").font = { color: { argb: "FF0000FF" }, underline: true };
+//       }
+//     }
+//   }
+
+//   const buffer = await workbook.xlsx.writeBuffer();
+//   saveAs(new Blob([buffer]), "students.xlsx");
+// };
+
+
+// Export to Excel with embedded images (Preview-only, no hyperlinks)
+// const handleDownloadExcel = async () => {
+//   if (students.length === 0) return;
+
+//   const workbook = new ExcelJS.Workbook();
+//   const worksheet = workbook.addWorksheet("Students");
+
+//   worksheet.columns = [
+//     { header: "SL No", key: "sl_no", width: 10 },
+//     { header: "Program", key: "course_name", width: 25 },
+//     { header: "Roll No", key: "roll_no", width: 15 },
+//     { header: "Enroll No", key: "enroll_no", width: 15 },
+//     { header: "Student Name", key: "student_name", width: 25 },
+//     { header: "Father", key: "father_name", width: 25 },
+//     { header: "Mother", key: "mother_name", width: 25 },
+//     { header: "DOB", key: "dob", width: 15 },
+//     { header: "Age", key: "age", width: 10 },
+//     { header: "Gender", key: "gender", width: 10 },
+//     { header: "Address", key: "address", width: 30 },
+//     { header: "Email", key: "email", width: 30 },
+//     { header: "Phone", key: "phone_no", width: 15 },
+//     { header: "Medal", key: "medal", width: 10 },
+//     { header: "Photo", key: "photo", width: 20 },
+//     { header: "Signature", key: "signature", width: 20 },
+//   ];
+
+//   const getImageExtension = (filename) => {
+//     if (!filename) return "png"; // default
+//     const ext = filename.split(".").pop().toLowerCase();
+//     if (["png", "jpg", "jpeg"].includes(ext)) return ext;
+//     return "png"; // fallback
+//   };
+
+//   // fixed preview size
+//   const imgWidth = 60;
+//   const imgHeight = 60;
+
+//   for (const s of students) {
+//     const row = worksheet.addRow(s);
+
+//     // --- Photo (Preview only) ---
+//     if (s.photo) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.photo));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const photoExt = getImageExtension(s.photo);
+
+//         const photoId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: photoExt,
+//         });
+
+//         worksheet.addImage(photoId, {
+//           tl: { col: 14, row: row.number - 1 }, // Photo column index
+//           ext: { width: imgWidth, height: imgHeight },
+//         });
+
+//         // Adjust row height for preview
+//         worksheet.getRow(row.number).height = 50;
+//       } catch (err) {
+//         console.error("Error embedding photo:", err);
+//         // leave blank on error
+//       }
+//     }
+
+//     // --- Signature (Preview only) ---
+//     if (s.signature) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.signature));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const signExt = getImageExtension(s.signature);
+
+//         const signId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: signExt,
+//         });
+
+//         worksheet.addImage(signId, {
+//           tl: { col: 15, row: row.number - 1 }, // Signature column index
+//           ext: { width: imgWidth, height: imgHeight },
+//         });
+
+//         // Adjust row height for preview
+//         worksheet.getRow(row.number).height = 50;
+//       } catch (err) {
+//         console.error("Error embedding signature:", err);
+//         // leave blank on error
+//       }
+//     }
+//   }
+
+//   const buffer = await workbook.xlsx.writeBuffer();
+//   saveAs(new Blob([buffer]), "students.xlsx");
+// };
+
+
+// Export to Excel with embedded images (Preview-only, no hyperlinks, cleaner look)
+// const handleDownloadExcel = async () => {
+//   if (students.length === 0) return;
+
+//   const workbook = new ExcelJS.Workbook();
+//   const worksheet = workbook.addWorksheet("Students");
+
+//   // Slightly larger default row height
+//   worksheet.properties.defaultRowHeight = 70;
+//   worksheet.properties.defaultColWidth = 50;
+
+//   worksheet.columns = [
+//     { header: "SL No", key: "sl_no", width: 10 },
+//     { header: "Program", key: "course_name", width: 25 },
+//     { header: "Roll No", key: "roll_no", width: 15 },
+//     { header: "Enroll No", key: "enroll_no", width: 15 },
+//     { header: "Student Name", key: "student_name", width: 25 },
+//     { header: "Father", key: "father_name", width: 25 },
+//     { header: "Mother", key: "mother_name", width: 25 },
+//     { header: "DOB", key: "dob", width: 15 },
+//     { header: "Age", key: "age", width: 10 },
+//     { header: "Gender", key: "gender", width: 10 },
+//     { header: "Address", key: "address", width: 30 },
+//     { header: "Email", key: "email", width: 30 },
+//     { header: "Phone", key: "phone_no", width: 15 },
+//     { header: "Medal", key: "medal", width: 10 },
+//     { header: "Photo", key: "photo", width: 20 },
+//     { header: "Signature", key: "signature", width: 20 },
+//   ];
+
+//   const getImageExtension = (filename) => {
+//     if (!filename) return "png"; // default
+//     const ext = filename.split(".").pop().toLowerCase();
+//     if (["png", "jpg", "jpeg"].includes(ext)) return ext;
+//     return "png"; // fallback
+//   };
+
+//   // Fixed preview size
+//   const imgWidth = 60;
+//   const imgHeight = 60;
+
+//   for (const s of students) {
+//     const row = worksheet.addRow(s);
+
+//     // --- Photo Preview ---
+//     if (s.photo) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.photo));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const photoExt = getImageExtension(s.photo);
+
+//         const photoId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: photoExt,
+//         });
+
+//         worksheet.addImage(photoId, {
+//           tl: { col: 14, row: row.number - 1 }, // Photo column index
+//           ext: { width: imgWidth, height: imgHeight },
+//         });
+//       } catch (err) {
+//         console.error("Error embedding photo:", err);
+//         // leave cell blank
+//       }
+//     }
+
+//     // --- Signature Preview ---
+//     if (s.signature) {
+//       try {
+//         const response = await fetch(buildFileUrl(s.signature));
+//         const arrayBuffer = await response.arrayBuffer();
+//         const signExt = getImageExtension(s.signature);
+
+//         const signId = workbook.addImage({
+//           buffer: arrayBuffer,
+//           extension: signExt,
+//         });
+
+//         worksheet.addImage(signId, {
+//           tl: { col: 15, row: row.number - 1 }, // Signature column index
+//           ext: { width: imgWidth, height: imgHeight },
+//         });
+//       } catch (err) {
+//         console.error("Error embedding signature:", err);
+//         // leave cell blank
+//       }
+//     }
+//   }
+
+//   const buffer = await workbook.xlsx.writeBuffer();
+//   saveAs(new Blob([buffer]), "students.xlsx");
+// };
+
+const handleDownloadExcel = async () => {
+  if (students.length === 0) return;
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Students");
+
+  worksheet.properties.defaultColWidth = 30;
+  worksheet.properties.defaultRowHeight = 40;
+
+  worksheet.columns = [
+    { header: "SL No", key: "sl_no", width: 10, },
+    { header: "Program", key: "course_name", width: 25, },
+    { header: "Roll No", key: "roll_no", width: 15, },
+    { header: "Enroll No", key: "enroll_no", width: 15, },
+    { header: "Student Name", key: "student_name", width: 25, },
+    { header: "Father", key: "father_name", width: 25, },
+    { header: "Mother", key: "mother_name", width: 25,  },
+    { header: "DOB", key: "dob", width: 15,  },
+    { header: "Age", key: "age", width: 10, },
+    { header: "Gender", key: "gender", width: 10,  },
+    { header: "Address", key: "address", width: 30,  },
+    { header: "Email", key: "email", width: 30, },
+    { header: "Phone", key: "phone_no", width: 15,  },
+    { header: "Medal", key: "medal", height: 30 },
+    { header: "Photo", key: "photo",  width: 25,  },
+    { header: "Signature", key: "signature", width: 30, },
+  ];
+
+  const getImageExtension = (filename) => {
+    if (!filename) return "png";
+    const ext = filename.split(".").pop().toLowerCase();
+    if (["png", "jpg", "jpeg"].includes(ext)) return ext;
+    return "png";
   };
+
+  // target image display size
+  const imgHeightPx = 60;
+  const imgWidthPx = 60;
+
+  // Excel row height ≈ pixels * 0.75
+  const excelRowHeight = imgHeightPx * 1.5;
+
+  for (const s of students) {
+    const row = worksheet.addRow(s);
+
+    // set row height dynamically
+    row.height = excelRowHeight;
+
+    // --- Photo ---
+    if (s.photo) {
+      try {
+        const response = await fetch(buildFileUrl(s.photo));
+        const arrayBuffer = await response.arrayBuffer();
+        const photoExt = getImageExtension(s.photo);
+
+        const photoId = workbook.addImage({
+          buffer: arrayBuffer,
+          extension: photoExt,
+        });
+
+        worksheet.addImage(photoId, {
+          tl: { col: 14, row: row.number - 1 },
+          br: { col: 15, row: row.number }, // fit inside cell
+          editAs: "oneCell",
+        });
+      } catch (err) {
+        console.error("Error embedding photo:", err);
+      }
+    }
+
+    // --- Signature ---
+    if (s.signature) {
+      try {
+        const response = await fetch(buildFileUrl(s.signature));
+        const arrayBuffer = await response.arrayBuffer();
+        const signExt = getImageExtension(s.signature);
+
+        const signId = workbook.addImage({
+          buffer: arrayBuffer,
+          extension: signExt,
+        });
+
+        worksheet.addImage(signId, {
+          tl: { col: 15, row: row.number - 1 },
+          br: { col: 16, row: row.number }, // fit inside cell
+          editAs: "oneCell",
+        });
+      } catch (err) {
+        console.error("Error embedding signature:", err);
+      }
+    }
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([buffer]), "students.xlsx");
+};
+
 
   const handleLogout = () => {
     logout();
